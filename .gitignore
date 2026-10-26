@@ -1,0 +1,6 @@
+tests/__pycache__/
+sim/sim_build/sim.vvp
+sim/sim_build/cocotb_iverilog_dump.v
+sim/sim_build/cmds.f
+sim_build/results.xml
+.venv/__pycache__/
