@@ -28,6 +28,26 @@ module async_fifo #(
    ; wire [ADDR_WIDTH:0] rq2_wptr
    ;
 
+
+
+    fifo_mem #(
+    .DATA_WIDTH (DATA_WIDTH),
+    .ADDR_WIDTH (ADDR_WIDTH)
+    ) fifo_mem_inst (
+    .wclk   (wclk),
+    .winc   (winc),
+    .wfull  (wfull),
+    .waddr  (waddr),
+    .wdata  (wdata),
+
+    .rrst_n (rrst_n),
+    .rclk   (rclk),
+    .rinc   (rinc),
+    .rempty (rempty),
+    .raddr  (raddr),
+    .rdata  (rdata)
+    );
+    
     sync_ff #(
         .WIDTH(ADDR_WIDTH + 1)
     ) sync_r2w (
