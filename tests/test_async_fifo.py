@@ -232,7 +232,7 @@ async def run_regression(dut, source, sink, state, rng):
 
 @cocotb.test()
 async def test_axis_async_fifo(dut):
-    seed = int(os.getenv("RANDOM_SEED", "12345"), 0)
+    seed = int(os.getenv("RANDOM_SEED", "87643"), 0)
     rng = random.Random(seed)
     state = State()
     source, sink = AxisSource(dut, state, rng), AxisSink(dut, state, rng)
