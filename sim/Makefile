@@ -2,7 +2,7 @@ SIM ?= icarus
 TOPLEVEL_LANG ?= verilog
 
 TOPLEVEL := async_fifo_axis
-COCOTB_TEST_MODULES := test_async_fifo_axis
+COCOTB_TEST_MODULES := test_async_fifo
 
 RTL_DIR := $(abspath ../rtl)
 TEST_DIR := $(abspath ../tests)
