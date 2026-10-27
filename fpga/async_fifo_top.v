@@ -20,7 +20,7 @@ module tang_nano_20k_fifo_top #(
     //gowin pll
     //input 27 MHz
     //output 13.5 MHz
-    fifo_test_pll fifo_test_pll_inst (
+    Gowin_rPLL Gowin_rPLL_inst (
         .clkin  (sys_clk),
         .clkout (read_clk),
         .lock   (pll_lock)
