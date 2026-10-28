@@ -1,6 +1,6 @@
 module uart_fifo_top (
     input  wire       sys_clk
-   ,input  wire       key_reset_n
+   ,input  wire       key_reset
    ,input  wire       uart_rx
    ,output wire       uart_tx
    ,output wire [5:0] led
@@ -22,7 +22,8 @@ module uart_fifo_top (
         .clkin  (sys_clk)
     );
 
-    assign global_reset_n = key_reset_n & pll_lock;
+    // button active high
+    assign global_reset_n = ~key_reset & pll_lock;
 
     reset_sync write_reset_sync_inst (
         .clk    (write_clk),

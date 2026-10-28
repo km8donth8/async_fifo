@@ -2,7 +2,7 @@ module tang_nano_20k_fifo_top #(
     parameter TARGET_BEATS = 100000
 )(
     input  wire       sys_clk
-   ,input  wire       key_reset_n
+   ,input  wire       key_reset
    ,output wire [5:0] led
 );
 
@@ -27,7 +27,7 @@ module tang_nano_20k_fifo_top #(
     );
 
     //hold reset until pll is locked
-    assign global_reset_n = key_reset_n & pll_lock;
+    assign global_reset_n = ~key_reset & pll_lock;
 
     reset_sync write_reset_sync_inst (
         .clk    (write_clk),
