@@ -64,12 +64,11 @@ The test fails if full, empty, both almost flags, backpressure on both sides, or
 ![Full](docs/wave_full.png)
 *A burst fills all 16 entries. After that, each read frees one write slot.*
 
-RTL simulation doesn't model metastability or routing skew. It shows the pointer and flag logic works with unrelated clocks, but it can't prove the crossing is safe on silicon.
+RTL simulation does not model metastability or routing skew. It shows the pointer and flag logic works with unrelated clocks, but it cannot prove the crossing is safe on silicon.
 
 ## FPGA
 
-Board: Tang Nano 20K (GW2AR-LV18QN88C8/I7). The write side runs on the 27 MHz crystal, and the read side on 13.5 MHz from the rPLL. Both builds use `fpga/uart_fifo.cst` and `fpga/uart_fifo.sdc`.
-
+Board: Tang Nano 20K (GW2AR-LV18QN88C8/I7). The write side runs on the 27 MHz crystal, and the read side on 13.5 MHz from the rPLL. Both builds use `fpga/uart_fifo.sdc`. `async_fifo_top.v` uses `fifo_constraints.cst` while `uart_fifo_top.v` uses `uart_fifo.cst`
 ### Self-test (`fpga/async_fifo_top.v`)
 
 A counter writes 100,000 beats at 27 MHz. The read side applies pseudorandom backpressure from an LFSR and checks every beat. The status bits are synchronised back to the LEDs.
@@ -100,22 +99,23 @@ The script sends one byte at a time, so this test checks the datapath and the cr
 |---|---|
 | Logic | 145 LUT, 6 ALU, 2 SSRAM (163 / 20,736) |
 | Registers | 147 / 15,750 |
-| Fmax | 236 MHz (27 MHz domain), 190 MHz (13.5 MHz domain) |
+| Fmax | 236 MHz (27 MHz domain), 187 MHz (13.5 MHz domain) |
 | Setup / hold violations | 0 / 0 |
 
 Fmax is Gowin's post-route estimate. The board runs at 27 and 13.5 MHz.
 
 ### Timing constraints
 
-The PLL output is related to the input clock, so without constraints Gowin timed the Gray-pointer crossing as a normal path. That reported about 1 ns of hold failure. The SDC puts the two clocks in an asynchronous group:
+The PLL output is related to the input clock, so Gowin times the crossing between the two domains. With no exceptions, that reported about 1 ns of hold failure on the Gray pointers going into the first synchroniser flop.
 
 ```
 create_clock -name sys_clk -period 37.037 [get_ports {sys_clk}]
 create_generated_clock -name clk_13p5 -source [get_ports {sys_clk}] -divide_by 2 [get_pins {Gowin_rPLL_inst/rpll_inst/CLKOUT}]
-set_clock_groups -asynchronous -group [get_clocks {sys_clk}] -group [get_clocks {clk_13p5}]
+set_false_path -hold -from [get_clocks {sys_clk}]  -to [get_clocks {clk_13p5}]
+set_false_path -hold -from [get_clocks {clk_13p5}] -to [get_clocks {sys_clk}]
 ```
 
-This removes timing on every path between the two domains, not only the pointer crossings. A better version would false-path just the pointer-to-first-flop paths.
+Only hold is cut. A hold miss into the first synchroniser flop means the bit is captured a cycle later, which the second flop absorbs. Setup is still checked. Because 13.5 MHz is exactly 27/2, the closest launch and capture edges are 37 ns apart in both directions. This keeps each pointer bit's delay, and so the skew between bits, within one clock period, which is what the Gray code relies on. With unrelated clocks, would use a set_max_delay on the pointer paths instead.
 
 The `PR1014` warning comes from the crystal sitting on pin 4, which isn't a global clock pin. The clock still ends up on a global buffer and timing passes.
 
@@ -124,7 +124,7 @@ The `PR1014` warning comes from the crystal sitting on pin 4, which isn't a glob
 - The read side manages one beat per three clocks. A prefetch or skid buffer would make it one per clock.
 - On hardware the clocks come from one crystal (fixed 2:1). Unrelated clocks are only tested in simulation.
 - Partial `TKEEP` is only tested in simulation.
-- No static CDC tool has been run, and no Gray-pointer skew constraint is set.
+- No static CDC tool has been run.
 
 ## Author
 
