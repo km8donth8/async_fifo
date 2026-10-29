@@ -10,7 +10,7 @@ The write and read sides each keep an `ADDR_WIDTH + 1` bit pointer in binary (fo
 
 `almost_full` and `almost_empty` are computed from the synchronised pointers. They may lag by a couple of clocks, so they are treated as hints rather than exact counts.
 
-The AXI wrapper stores `{tkeep, tlast, tdata}` (37 bits by default) and sets `s_axis_tready = ~wfull`. The memory read is registered, so the output stage takes three read clocks per beat: request, capture, then hold until `m_axis_tready`. The payload stays stable while `TVALID` is high and `TREADY` is low. The output register holds one beat beyond the 16 in memory, so `rempty` can be 1 while `m_axis_tvalid` is still 1.
+The AXI wrapper stores `{tkeep, tlast, tdata}` (37 bits by default) and sets `s_axis_tready = ~wfull`. The memory's registered read output is used directly as the AXI output register. A new word is read whenever the FIFO has data and the output is empty or being accepted (`rinc = ~rempty & (~m_axis_tvalid | m_axis_tready)`), so the read side delivers one beat per clock. The read register only loads on `rinc`, so the payload stays stable while `TVALID` is high and `TREADY` is low. It holds one beat beyond the 16 in memory, so `rempty` can be 1 while `m_axis_tvalid` is still 1.
 
 | Parameter | Default | |
 |---|---|---|
@@ -56,13 +56,13 @@ The test runs single-beat packets, random-length packets with random backpressur
 The test fails if full, empty, both almost flags, backpressure on both sides, or partial `TKEEP` never happened.
 
 ![Streaming](docs/wave_streaming.png)
-*Every write accepted. The pointers count in Gray code, and the read side gives one beat per three clocks.*
-
+*Every write accepted. Each beat reaches the output a few read clocks later, and beats that arrive together leave back-to-back.*
+ 
 ![Backpressure](docs/wave_backpressure.png)
-*`m_axis_tready` low: the output holds, the FIFO stays full, and the input stalls with its data held.*
-
+*While `m_axis_tready` is low the output beat and `rptr` hold. After release, beats leave on consecutive read clocks.*
+ 
 ![Full](docs/wave_full.png)
-*A burst fills all 16 entries. After that, each read frees one write slot.*
+*A burst into an empty FIFO: 16 entries in memory plus one in the output register, then `wfull`. After that, each read frees one write slot.*
 
 RTL simulation does not model metastability or routing skew. It shows the pointer and flag logic works with unrelated clocks, but it cannot prove the crossing is safe on silicon.
 
@@ -97,9 +97,9 @@ The script sends one byte at a time, so this test checks the datapath and the cr
 
 | | |
 |---|---|
-| Logic | 145 LUT, 6 ALU, 2 SSRAM (163 / 20,736) |
-| Registers | 147 / 15,750 |
-| Fmax | 236 MHz (27 MHz domain), 187 MHz (13.5 MHz domain) |
+| Logic | 146 LUT, 6 ALU, 2 SSRAM (164 / 20,736) |
+| Registers | 138 / 15,750 |
+| Fmax | 203 MHz (27 MHz domain), 192 MHz (13.5 MHz domain) |
 | Setup / hold violations | 0 / 0 |
 
 Fmax is Gowin's post-route estimate. The board runs at 27 and 13.5 MHz.
@@ -121,7 +121,7 @@ The `PR1014` warning comes from the crystal sitting on pin 4, which isn't a glob
 
 ## Limitations
 
-- The read side manages one beat per three clocks. A prefetch or skid buffer would make it one per clock.
+- `m_axis_tready` feeds `rinc` combinationally, so the read pointer, empty flag and memory read enable all sit      behind the sink's ready. That is fine at 13.5 MHz. At higher clock rates a skid buffer would register it.
 - On hardware the clocks come from one crystal (fixed 2:1). Unrelated clocks are only tested in simulation.
 - Partial `TKEEP` is only tested in simulation.
 - No static CDC tool has been run.

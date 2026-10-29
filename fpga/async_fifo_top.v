@@ -1,4 +1,4 @@
-module tang_nano_20k_fifo_top #(
+module async_fifo_top #(
     parameter TARGET_BEATS = 100000
 )(
     input  wire       sys_clk
