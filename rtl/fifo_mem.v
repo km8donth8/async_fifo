@@ -37,10 +37,4 @@ module fifo_mem #(
             rdata <= mem[raddr];
         end
     end
-
-    // add initial value for rdata for simulation startup
-   // initial begin
-    //    rdata = {DATA_WIDTH{1'b0}};
-    //end
-
 endmodule

@@ -13,16 +13,14 @@ module wptr_full #(
 
 );
 
-    reg  [ADDR_WIDTH:0] wbin
-   ;wire [ADDR_WIDTH:0] wbin_next
-   ;wire [ADDR_WIDTH:0] wgray_next
-   ;wire                wfull_val
-   ;
+    reg  [ADDR_WIDTH:0] wbin;
+    wire [ADDR_WIDTH:0] wbin_next;
+    wire [ADDR_WIDTH:0] wgray_next;
+    wire                wfull_val;
 
-    //gray 2 binary conversion for wq2 rptr
-    reg  [ADDR_WIDTH:0] wq2_rptr_bin
-   ;wire [ADDR_WIDTH:0] w_occupancy
-   ;
+    // gray to binary conversion for wq2_rptr
+    reg  [ADDR_WIDTH:0] wq2_rptr_bin;
+    wire [ADDR_WIDTH:0] w_occupancy;
 
    function [ADDR_WIDTH:0] gray2bin;
         input [ADDR_WIDTH:0] gray;

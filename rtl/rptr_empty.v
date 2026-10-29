@@ -1,6 +1,6 @@
 module rptr_empty #(
-    parameter ADDR_WIDTH       = 4,
-    parameter ALMOST_EMPTY_VAL = 4 // assert almost_empty when <= 4 entries left
+    parameter ADDR_WIDTH       = 4
+   ,parameter ALMOST_EMPTY_VAL = 4 // assert almost_empty when <= 4 entries left
 )(
     input  wire                  rclk
    ,input  wire                  rrst_n
@@ -11,11 +11,10 @@ module rptr_empty #(
    ,output wire [ADDR_WIDTH-1:0] raddr
    ,output reg  [ADDR_WIDTH:0]   rptr
 );
-    reg  [ADDR_WIDTH:0] rbin
-   ;wire [ADDR_WIDTH:0] rbin_next
-   ;wire [ADDR_WIDTH:0] rgray_next
-   ;wire                rempty_val
-   ;
+    reg  [ADDR_WIDTH:0] rbin;
+    wire [ADDR_WIDTH:0] rbin_next;
+    wire [ADDR_WIDTH:0] rgray_next;
+    wire                rempty_val;
 
     //gray 2 binary conversion for rq2 wptr
     reg  [ADDR_WIDTH:0] rq2_wptr_bin;

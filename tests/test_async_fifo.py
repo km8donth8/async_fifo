@@ -232,7 +232,7 @@ async def run_regression(dut, source, sink, state, rng):
 
 @cocotb.test()
 async def test_axis_async_fifo(dut):
-    seed = int(os.getenv("RANDOM_SEED", "87643"), 0)
+    seed = int(os.getenv("RANDOM_SEED", "12345"), 0)
     rng = random.Random(seed)
     state = State()
     source, sink = AxisSource(dut, state, rng), AxisSink(dut, state, rng)
@@ -240,7 +240,6 @@ async def test_axis_async_fifo(dut):
 
     w_ns = int(os.getenv("W_NS", rng.randint(5, 17)))
     r_ns = int(os.getenv("R_NS", rng.randint(5, 17)))
-    #w_ns, r_ns = rng.randint(5, 17), rng.randint(5, 17)  # random clock periods per seed
     if w_ns == r_ns:
         r_ns += 1  # same period would make the domains synchronous
     cocotb.log.info("RANDOM_SEED=%d write=%dns read=%dns", seed, w_ns, r_ns)

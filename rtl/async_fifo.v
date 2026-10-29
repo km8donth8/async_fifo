@@ -5,47 +5,46 @@ module async_fifo #(
    , parameter ALMOST_EMPTY_VAL = 4
 )(
     input  wire                  wclk
-   , input  wire                  wrst_n
-   , input  wire                  winc
-   , input  wire [DATA_WIDTH-1:0] wdata
-   , output wire                  wfull
-   , output wire                  almost_full
+   ,input  wire                  wrst_n
+   ,input  wire                  winc
+   ,input  wire [DATA_WIDTH-1:0] wdata
+   ,output wire                  wfull
+   ,output wire                  almost_full
 
-   , input  wire                  rclk
-   , input  wire                  rrst_n
-   , input  wire                  rinc
-   , output wire [DATA_WIDTH-1:0] rdata
-   , output wire                  rempty
-   , output wire                  almost_empty
+   ,input  wire                  rclk
+   ,input  wire                  rrst_n
+   ,input  wire                  rinc
+   ,output wire [DATA_WIDTH-1:0] rdata
+   ,output wire                  rempty
+   ,output wire                  almost_empty
 );
-    wire [ADDR_WIDTH-1:0] waddr
-   ; wire [ADDR_WIDTH-1:0] raddr
+    wire [ADDR_WIDTH-1:0] waddr;
+    wire [ADDR_WIDTH-1:0] raddr;
 
-   ; wire [ADDR_WIDTH:0] wptr
-   ; wire [ADDR_WIDTH:0] rptr
+    wire [ADDR_WIDTH:0]   wptr;
+    wire [ADDR_WIDTH:0]   rptr;
 
-   ; wire [ADDR_WIDTH:0] wq2_rptr
-   ; wire [ADDR_WIDTH:0] rq2_wptr
-   ;
+    wire [ADDR_WIDTH:0]   wq2_rptr;
+    wire [ADDR_WIDTH:0]   rq2_wptr;
 
 
 
     fifo_mem #(
-    .DATA_WIDTH (DATA_WIDTH),
-    .ADDR_WIDTH (ADDR_WIDTH)
+        .DATA_WIDTH (DATA_WIDTH),
+        .ADDR_WIDTH (ADDR_WIDTH)
     ) fifo_mem_inst (
-    .wclk   (wclk),
-    .winc   (winc),
-    .wfull  (wfull),
-    .waddr  (waddr),
-    .wdata  (wdata),
+        .wclk   (wclk),
+        .winc   (winc),
+        .wfull  (wfull),
+        .waddr  (waddr),
+        .wdata  (wdata),
 
-    .rrst_n (rrst_n),
-    .rclk   (rclk),
-    .rinc   (rinc),
-    .rempty (rempty),
-    .raddr  (raddr),
-    .rdata  (rdata)
+        .rrst_n (rrst_n),
+        .rclk   (rclk),
+        .rinc   (rinc),
+        .rempty (rempty),
+        .raddr  (raddr),
+        .rdata  (rdata)
     );
     
     sync_ff #(
