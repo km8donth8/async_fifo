@@ -1,32 +1,32 @@
 module async_fifo_axis #(
     parameter DATA_WIDTH       = 32
-   , parameter KEEP_WIDTH       = DATA_WIDTH / 8
-   , parameter ADDR_WIDTH       = 4
-   , parameter ALMOST_FULL_VAL  = 12
-   , parameter ALMOST_EMPTY_VAL = 4
+   ,parameter KEEP_WIDTH       = DATA_WIDTH / 8
+   ,parameter ADDR_WIDTH       = 4
+   ,parameter ALMOST_FULL_VAL  = 12
+   ,parameter ALMOST_EMPTY_VAL = 4
 )(
     // write doman (slave)
     input  wire                    s_axis_aclk
-   , input  wire                    s_axis_aresetn
-   , input  wire                    s_axis_tvalid
-   , output wire                    s_axis_tready
-   , input  wire [DATA_WIDTH-1:0]   s_axis_tdata
-   , input  wire [KEEP_WIDTH-1:0]   s_axis_tkeep
-   , input  wire                    s_axis_tlast
-   , output wire                    s_axis_almost_full
+   ,input  wire                    s_axis_aresetn
+   ,input  wire                    s_axis_tvalid
+   ,output wire                    s_axis_tready
+   ,input  wire [DATA_WIDTH-1:0]   s_axis_tdata
+   ,input  wire [KEEP_WIDTH-1:0]   s_axis_tkeep
+   ,input  wire                    s_axis_tlast
+   ,output wire                    s_axis_almost_full
 
     // read domain (master)
-   , input  wire                    m_axis_aclk
-   , input  wire                    m_axis_aresetn
-   , output wire                    m_axis_tvalid
-   , input  wire                    m_axis_tready
-   , output wire [DATA_WIDTH-1:0]   m_axis_tdata
-   , output wire [KEEP_WIDTH-1:0]   m_axis_tkeep
-   , output wire                    m_axis_tlast
-   , output wire                    m_axis_almost_empty
+   ,input  wire                    m_axis_aclk
+   ,input  wire                    m_axis_aresetn
+   ,output wire                    m_axis_tvalid
+   ,input  wire                    m_axis_tready
+   ,output wire [DATA_WIDTH-1:0]   m_axis_tdata
+   ,output wire [KEEP_WIDTH-1:0]   m_axis_tkeep
+   ,output wire                    m_axis_tlast
+   ,output wire                    m_axis_almost_empty
     // status flags
-   , output wire                    wfull
-   , output wire                    rempty
+   ,output wire                    wfull
+   ,output wire                    rempty
 );
 
     // total payload width calculation

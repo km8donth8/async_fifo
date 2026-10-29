@@ -1,8 +1,8 @@
 module async_fifo #(
     parameter DATA_WIDTH       = 8
-   , parameter ADDR_WIDTH       = 4
-   , parameter ALMOST_FULL_VAL  = 12
-   , parameter ALMOST_EMPTY_VAL = 4
+   ,parameter ADDR_WIDTH       = 4
+   ,parameter ALMOST_FULL_VAL  = 12
+   ,parameter ALMOST_EMPTY_VAL = 4
 )(
     input  wire                  wclk
    ,input  wire                  wrst_n
